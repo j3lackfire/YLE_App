@@ -10,12 +10,15 @@ public class YleConnector : MonoBehaviour {
 
     public Image image;
 
+    public BaseUIElement[] baseUIElements;
+
     [SerializeField]
     public YLEResponse yleResponse;
 
     private void Awake()
     {
         image = FindObjectOfType<Image>();
+        baseUIElements = FindObjectsOfType<BaseUIElement>();
     }
 
     public void GetAllItem()
@@ -25,11 +28,9 @@ public class YleConnector : MonoBehaviour {
 
     private IEnumerator TestFunction(VoidDelegate callback)
     {
-        Debug.Log("<color=cyan> Test function at </color>" + Time.timeSinceLevelLoad);
-
         UnityWebRequest www = UnityWebRequest.Get(
             YLEHelper.GetBaseURL()
-            .SetSearchQuery("Vietnam")
+            .SetSearchQuery("Moomin")
             .SetSearchLimit(10)
             .AddAuthorization()
             );
@@ -37,11 +38,10 @@ public class YleConnector : MonoBehaviour {
         yield return www.SendWebRequest();
         if (www.isNetworkError || www.isHttpError)
         {
-            Debug.Log(www.error);
+            Debug.LogError(www.error);
         }
         else
         {
-            Debug.Log(www.downloadHandler.text);
             yleResponse = YLEResponse.FromJSON(www.downloadHandler.text);
             callback();
         }
@@ -50,24 +50,21 @@ public class YleConnector : MonoBehaviour {
 
     private void OnDataReceived()
     {
-        Debug.Log(Time.timeSinceLevelLoad);
         StartCoroutine(DataReceivedCoroutine(null));
     }
 
     private IEnumerator DataReceivedCoroutine(VoidDelegate callback)
     {
         UnityWebRequest www_2 = UnityWebRequest.Get(YLEHelper.GetImage(256,256,yleResponse.data[0].image.id));
-        Debug.Log(YLEHelper.GetImage(256, 256, yleResponse.data[0].image.id));
         yield return www_2.SendWebRequest();
-        Debug.Log("Thumbnail received !!!");
+        
         Texture2D thumbnail = new Texture2D(256, 256);
         thumbnail.LoadImage(www_2.downloadHandler.data);
         thumbnail.Apply();
-        //((DownloadHandlerTexture)www_2.downloadHandler).texture,
-        image.sprite = Sprite.Create(
-            thumbnail,
-            new Rect(0, 0, thumbnail.width, thumbnail.height),
-            Vector2.zero);
+        for (int i = 0; i < baseUIElements.Length; i ++)
+        {
+            baseUIElements[i].SetResponse(i + 1, yleResponse.data[i], thumbnail);
+        }
     }
 
 }

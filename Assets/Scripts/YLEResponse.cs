@@ -32,13 +32,14 @@ public struct YLEResponse {
     public struct Data
     {
         public string id;
-        public Description description;
+        public BiligualText title;
+        public BiligualText description;
         public Image image;
+        public Creator creator;
 
         [System.Serializable]
-        public struct Description
+        public struct BiligualText
         {
-            public string en;
             public string fi;
             public string sv;
         }
@@ -48,6 +49,13 @@ public struct YLEResponse {
         {
             public string id;
             public bool available;
+        }
+
+        [System.Serializable]
+        public struct Creator
+        {
+            public string name;
+            public string type;
         }
     }
 
