@@ -4,37 +4,46 @@ using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine;
 
-public class YleConnector : MonoBehaviour {
+public class YleConnector : BaseManager {
+
+    private UIManager uiManager;
 
     public delegate void VoidDelegate();
 
     public Image image;
 
-    public BaseUIElement[] baseUIElements;
 
     [SerializeField]
     public YLEResponse yleResponse;
 
-    private void Awake()
+    public override void Init()
     {
+        base.Init();
+        uiManager = director.UiManager;
         image = FindObjectOfType<Image>();
-        baseUIElements = FindObjectsOfType<BaseUIElement>();
     }
 
-    public void GetAllItem()
+    public void DoSearchFunction(string _query)
     {
-        StartCoroutine(TestFunction(OnDataReceived));
+        Debug.Log("Do search function !!");
+        StartCoroutine(TestFunction(_query, OnDataReceived));
     }
 
-    private IEnumerator TestFunction(VoidDelegate callback)
+    private IEnumerator TestFunction(string _query, VoidDelegate callback)
     {
         UnityWebRequest www = UnityWebRequest.Get(
             YLEHelper.GetBaseURL()
-            .SetSearchQuery("Moomin")
+            .SetSearchQuery(_query)
             .SetSearchLimit(10)
             .AddAuthorization()
-            );
+        );
 
+        Debug.Log(
+            YLEHelper.GetBaseURL()
+            .SetSearchQuery(_query)
+            .SetSearchLimit(10)
+            .AddAuthorization()
+        );
         yield return www.SendWebRequest();
         if (www.isNetworkError || www.isHttpError)
         {
@@ -42,10 +51,11 @@ public class YleConnector : MonoBehaviour {
         }
         else
         {
+            Debug.Log(www.downloadHandler.text);
+
             yleResponse = YLEResponse.FromJSON(www.downloadHandler.text);
             callback();
         }
-
     }
 
     private void OnDataReceived()
@@ -61,10 +71,7 @@ public class YleConnector : MonoBehaviour {
         Texture2D thumbnail = new Texture2D(256, 256);
         thumbnail.LoadImage(www_2.downloadHandler.data);
         thumbnail.Apply();
-        for (int i = 0; i < baseUIElements.Length; i ++)
-        {
-            baseUIElements[i].SetResponse(i + 1, yleResponse.data[i], thumbnail);
-        }
+        
     }
 
 }

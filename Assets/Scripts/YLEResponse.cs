@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//http://developer.yle.fi/tutorial-overview/index.html
 [System.Serializable]
 public struct YLEResponse {
     //meta data
@@ -18,7 +19,6 @@ public struct YLEResponse {
         return JsonUtility.FromJson<YLEResponse>(_jsonData);
     }
 
-    //http://developer.yle.fi/tutorial-overview/index.html
     [System.Serializable]
     public struct MetaData
     {
@@ -32,13 +32,13 @@ public struct YLEResponse {
     public struct Data
     {
         public string id;
-        public BiligualText title;
-        public BiligualText description;
+        public DualLanguageText title;
+        public DualLanguageText description;
         public Image image;
         public Creator creator;
 
         [System.Serializable]
-        public struct BiligualText
+        public struct DualLanguageText
         {
             public string fi;
             public string sv;
