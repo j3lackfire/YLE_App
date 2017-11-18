@@ -40,6 +40,7 @@ public struct YLEResponse {
         [System.Serializable]
         public struct DualLanguageText
         {
+            public string und;
             public string fi;
             public string sv;
         }

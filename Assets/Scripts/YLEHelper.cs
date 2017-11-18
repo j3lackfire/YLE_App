@@ -21,7 +21,7 @@ public static class YLEHelper {
 
     public static string SetSearchQuery(this string _baseURL, string _searchQuery)
     {
-        return _baseURL + "q=" + _searchQuery + "&";
+        return string.IsNullOrEmpty(_searchQuery) ? _baseURL : _baseURL + "q=" + _searchQuery + "&";
     }
 
     public static string SetSearchLimit(this string _baseURL, int _limit)
