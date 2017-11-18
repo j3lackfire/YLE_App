@@ -72,7 +72,8 @@ public class SearchUI : MonoBehaviour {
 
             RectTransform searchButtonRect = doSearchButton.GetComponent<RectTransform>();
             searchButtonRect.DOAnchorPos(searchButtonPos, 0.3f);
-            searchButtonRect.DOSizeDelta(searchButtonSize, 0.3f).OnComplete(OnSearchButtonClicked);
+            searchButtonRect.DOSizeDelta(searchButtonSize, 0.3f);
+            OnSearchButtonClicked();
         } else
         {
             uiManager.ClearSearchResult();
