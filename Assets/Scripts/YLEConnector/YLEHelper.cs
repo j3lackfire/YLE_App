@@ -51,8 +51,35 @@ public static class YLEHelper {
         return _baseURL + "order=publication.starttime:desc&";
     }
 
+    public static string SetAvailability(this string _baseURL, ContentAvailability _availability)
+    {
+        switch(_availability)
+        {
+            case ContentAvailability.none:
+            default:
+                return _baseURL;
+            case ContentAvailability.onDemand:
+                return _baseURL + "availability=ondemand&";
+            case ContentAvailability.futureDemand:
+                return _baseURL + "availability=future-ondemand&";
+            case ContentAvailability.futureSchedule:
+                return _baseURL + "availability=" + "future-scheduled&";
+            case ContentAvailability.future:
+                return _baseURL + "availability=" + "in-future&";
+        }
+    }
+
     public static string GetYleUrlByID(string _contentID)
     {
         return yleAreenaURL + _contentID;
     }
+}
+
+public enum ContentAvailability
+{
+    none, //no value, will even show program that is not available
+    onDemand,
+    futureDemand,
+    futureSchedule,
+    future
 }

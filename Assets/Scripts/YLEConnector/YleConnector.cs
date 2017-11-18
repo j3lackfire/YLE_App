@@ -56,6 +56,7 @@ public class YleConnector : BaseManager {
             .SetSearchQuery(_query)
             .SetTimeOrderDescending()
             .SetSearchLimit(10)
+            .SetAvailability(ContentAvailability.onDemand)
             .SetSearchOffset(_offset)
             .AddAuthorization()
         );

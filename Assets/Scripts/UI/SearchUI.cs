@@ -9,8 +9,8 @@ public class SearchUI : MonoBehaviour {
     private YleConnector yleConnector;
     private UIManager uiManager;
 
-    private Button doSearchButton;
     private InputField searchField;
+    private Button doSearchButton;
 
     private Text numberOfResult;
     private Text logo;
@@ -52,11 +52,21 @@ public class SearchUI : MonoBehaviour {
     private void OnEnable()
     {
         doSearchButton.onClick.AddListener(OnSearchButtonClicked);
+        searchField.onEndEdit.AddListener(OnSearchFieldEndEdit);
     }
 
     private void OnDisable()
     {
         doSearchButton.onClick.RemoveListener(OnSearchButtonClicked);
+        searchField.onEndEdit.RemoveListener(OnSearchFieldEndEdit);
+    }
+
+    private void OnSearchFieldEndEdit(string _s)
+    {
+        if (!string.IsNullOrEmpty(_s))
+        {
+            OnSearchButtonClicked();
+        }
     }
 
     private void OnSearchButtonClicked()
