@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 public class UIScrollView : MonoBehaviour {
-    private UIManager uiManager;
     private YleConnector yleConnector;
     private RectTransform thisRectTransform;
 
@@ -19,9 +18,10 @@ public class UIScrollView : MonoBehaviour {
     private RectTransform contentPanel;
     
     [SerializeField]
-    private List<BaseUIElement> baseUIElementsList;
+    private List<BaseUIElement> baseUIElementsList = new List<BaseUIElement>();
+    [SerializeField]
     //index of all the element that is currently expanding.
-    private List<int> expandedElementList;
+    private List<int> expandedElementList = new List<int>();
 
     private Sprite defaultThumbnail;
     private Sprite loadingThumbnail;
@@ -29,16 +29,15 @@ public class UIScrollView : MonoBehaviour {
     public void Init()
     {
         yleConnector = Director.instance.YleConnector;
-        uiManager = Director.instance.UiManager;
 
         thisRectTransform = GetComponent<RectTransform>();
-        baseUIElementsList = new List<BaseUIElement>();
-        expandedElementList = new List<int>();
 
         contentPanel = transform.Find("Viewport/Content").GetComponent<RectTransform>();
         contentPanel.sizeDelta = new Vector2(contentPanel.sizeDelta.x, spacing);
 
         numberOfElementPerPage = (int)(thisRectTransform.sizeDelta.y / elementHeight);
+
+        ClearAllView();
 
         defaultThumbnail = Resources.Load<Sprite>("YLE_Default_Thumbnail");
         loadingThumbnail = Resources.Load<Sprite>("YLE_Loading_Thumbnail");
@@ -59,8 +58,8 @@ public class UIScrollView : MonoBehaviour {
         {
             baseUIElementsList[i].HideUIElement();
         }
-        baseUIElementsList.Clear();
-        expandedElementList.Clear();
+        baseUIElementsList = new List<BaseUIElement>();
+        expandedElementList = new List<int>();
         contentPanel.anchoredPosition = Vector2.zero;
         contentPanel.sizeDelta = new Vector2(contentPanel.sizeDelta.x, spacing);
     }
@@ -70,6 +69,7 @@ public class UIScrollView : MonoBehaviour {
         BaseUIElement uiElement = PrefabsManager.SpawnPrefab<BaseUIElement>("BaseUIElement", "Prefabs/");
         float elementYPos = spacing + baseUIElementsList.Count * (spacing + elementHeight) + expandedElementList.Count * (elementHeightExpanded - elementHeight);
         uiElement.Init(this, contentPanel, baseUIElementsList.Count, -elementYPos, _data);
+
         //add to my list for easy manager
         baseUIElementsList.Add(uiElement);
         //resize the content panel accordingly

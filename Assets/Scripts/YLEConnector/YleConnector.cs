@@ -17,6 +17,7 @@ public class YleConnector : BaseManager {
 
     [SerializeField]
     public List<YLEResponse.Data> responseDatasList = new List<YLEResponse.Data>();
+    public YLEResponse.MetaData metaData;
 
     public bool isLoading = false;
     private bool isRequestingThumbnail = false;
@@ -41,7 +42,10 @@ public class YleConnector : BaseManager {
     public void GetNextResultInQueue()
     {
         currentSearchPosition += 10;
-        StartCoroutine(SendSearchRequest(currentSearchQuery, currentSearchPosition, OnDataReceived));
+        if (currentSearchPosition <= metaData.count)
+        {
+            StartCoroutine(SendSearchRequest(currentSearchQuery, currentSearchPosition, OnDataReceived));
+        }
     }
 
     private IEnumerator SendSearchRequest(string _query, int _offset, DataReceivedDelegate callback)
@@ -63,8 +67,7 @@ public class YleConnector : BaseManager {
         {
             Debug.LogError("Network error !!!");
             Debug.LogError(www.error);
-        }
-        else
+        } else
         {
             Debug.Log("<color=cyan>Server response:</color>");
             Debug.Log(www.downloadHandler.text);
@@ -74,12 +77,15 @@ public class YleConnector : BaseManager {
 
     private void OnDataReceived(YLEResponse _yleResponse)
     {
+        metaData = _yleResponse.meta;
+        uiManager.SetNumberOfResult(metaData.count);
+
         for (int i = 0; i < _yleResponse.data.Length; i++)
         {
             uiManager.AddUIElement(_yleResponse.data[i]);
             responseDatasList.Add(_yleResponse.data[i]);
         }
-        if (!isRequestingThumbnail)
+        if (!isRequestingThumbnail && responseDatasList.Count > 0)
         {
             StartCoroutine(RequestThumbnail(currentRequestingThumbnail, OnThumbnailReceived));
         }
