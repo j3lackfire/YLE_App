@@ -35,7 +35,12 @@ public struct YLEResponse {
         public DualLanguageText title;
         public DualLanguageText description;
         public Image image;
-        public Creator creator;
+
+        public string type;
+        public string typeMedia;
+
+        public Creator[] creator;
+        public PublicationEvent[] publicationEvent;
 
         [System.Serializable]
         public struct DualLanguageText
@@ -57,6 +62,25 @@ public struct YLEResponse {
         {
             public string name;
             public string type;
+        }
+
+        [System.Serializable]
+        public struct PublicationEvent
+        {
+            public string startTime;
+            public string endTime;
+            public Service service;
+
+            [System.Serializable]
+            public struct Service
+            {
+                public string id;
+            }
+        }
+
+        public bool HasThumbnail ()
+        {
+            return image.available && !string.IsNullOrEmpty(image.id);
         }
     }
 

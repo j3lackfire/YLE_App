@@ -16,8 +16,6 @@ public class YleConnector : BaseManager {
     private int currentRequestingThumbnail = 0;
 
     [SerializeField]
-    public YLEResponse yleResponse;
-    [SerializeField]
     public List<YLEResponse.Data> responseDatasList = new List<YLEResponse.Data>();
 
     public bool isLoading = false;
@@ -35,6 +33,7 @@ public class YleConnector : BaseManager {
     {
         currentSearchPosition = 0;
         currentRequestingThumbnail = 0;
+        currentSearchQuery = _query;
         responseDatasList = new List<YLEResponse.Data>();
         StartCoroutine(SendSearchRequest(_query, 0, OnDataReceived));
     }
@@ -51,11 +50,12 @@ public class YleConnector : BaseManager {
         UnityWebRequest www = UnityWebRequest.Get(
             YLEHelper.GetBaseURL()
             .SetSearchQuery(_query)
+            .SetTimeOrderDescending()
             .SetSearchLimit(10)
             .SetSearchOffset(_offset)
             .AddAuthorization()
         );
-
+        
         Debug.Log(YLEHelper.GetBaseURL().SetSearchQuery(_query).SetSearchLimit(10).AddAuthorization());
         yield return www.SendWebRequest();
         isLoading = false;
@@ -66,7 +66,7 @@ public class YleConnector : BaseManager {
         }
         else
         {
-            Debug.Log("<color=cyan>Server response:</cyan>");
+            Debug.Log("<color=cyan>Server response:</color>");
             Debug.Log(www.downloadHandler.text);
             callback(YLEResponse.FromJSON(www.downloadHandler.text));
         }
@@ -74,11 +74,10 @@ public class YleConnector : BaseManager {
 
     private void OnDataReceived(YLEResponse _yleResponse)
     {
-        yleResponse = _yleResponse;
-        for (int i = 0; i < yleResponse.data.Length; i++)
+        for (int i = 0; i < _yleResponse.data.Length; i++)
         {
-            uiManager.AddUIElement(yleResponse.data[i]);
-            responseDatasList.Add(yleResponse.data[i]);
+            uiManager.AddUIElement(_yleResponse.data[i]);
+            responseDatasList.Add(_yleResponse.data[i]);
         }
         if (!isRequestingThumbnail)
         {
@@ -89,26 +88,33 @@ public class YleConnector : BaseManager {
     private IEnumerator RequestThumbnail(int _index, VoidDelegate callback)
     {
         isRequestingThumbnail = true;
-        if (string.IsNullOrEmpty(responseDatasList[_index].image.id))
+        string searchQuery = currentSearchQuery;
+        if (!responseDatasList[_index].HasThumbnail())
         {
-            uiManager.SetDefaultThumbnail(_index);
             yield return null;
-        } else
+            currentRequestingThumbnail++;
+        }
+        else
         {
             UnityWebRequest www_2 = UnityWebRequest.Get(YLEHelper.GetImage(256, 256, responseDatasList[_index].image.id));
             yield return www_2.SendWebRequest();
-            Debug.Log(_index + " ," + Time.timeSinceLevelLoad + " , " + www_2.downloadHandler.text);
-            Texture2D thumbnail = new Texture2D(256, 256);
-            thumbnail.LoadImage(www_2.downloadHandler.data);
-            thumbnail.Apply();
-            uiManager.SetThumbnail(_index, thumbnail);
+            //the search query has been changed, which mean new search result,
+            //clear everything and fetch everything from start.
+            if (searchQuery == currentSearchQuery)
+            {
+                Debug.Log(_index + " ," + Time.timeSinceLevelLoad + " , " + www_2.downloadHandler.text);
+                Texture2D thumbnail = new Texture2D(256, 256);
+                thumbnail.LoadImage(www_2.downloadHandler.data);
+                thumbnail.Apply();
+                uiManager.SetThumbnail(_index, thumbnail);
+                currentRequestingThumbnail++;
+            }
         }
         callback();
     }
 
     private void OnThumbnailReceived()
     {
-        currentRequestingThumbnail++;
         if (currentRequestingThumbnail > responseDatasList.Count - 1)
         {
             isRequestingThumbnail = false;

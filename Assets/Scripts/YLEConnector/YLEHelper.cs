@@ -5,6 +5,8 @@ using UnityEngine;
 public static class YLEHelper {
     private static string baseURL = "https://external.api.yle.fi/v1/programs/items.json?";
     private static string baseImageUrl = "http://images.cdn.yle.fi/image/upload/";
+    private static string yleAreenaURL = "https://areena.yle.fi/";
+
 
     private static string personalKey = "app_id=6a9f2d9b&app_key=56d204570819f80ab478e90e0743bf88";
     private static string secretKey = "ce20add99825303b";
@@ -42,5 +44,15 @@ public static class YLEHelper {
     public static string GetImage(int _width, int _height, string _imageID)
     {
         return baseImageUrl + "w_" + _width + ",h_" + _height + ",c_fit/" + _imageID + ".png";
+    }
+
+    public static string SetTimeOrderDescending(this string _baseURL)
+    {
+        return _baseURL + "order=publication.starttime:desc&";
+    }
+
+    public static string GetYleUrlByID(string _contentID)
+    {
+        return yleAreenaURL + _contentID;
     }
 }
