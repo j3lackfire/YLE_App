@@ -135,7 +135,7 @@ public class BaseUIElement : PooledObject {
                 description.text = displayData.description.sv;
             } else
             {
-                description.text = "Ei ole kuvausta";
+                description.text = "Ei ole kuvausta.";
             }
         }
     }
@@ -171,7 +171,7 @@ public class BaseUIElement : PooledObject {
         publicationService.gameObject.SetActive(!_isMinimize);
         gotoYLEButton.gameObject.SetActive(!_isMinimize);
 
-        float newSizeDeltaY = _isMinimize ? 200f : 500f;
+        float newSizeDeltaY = _isMinimize ? uiScrollView.ElementHeight : uiScrollView.ElementHeightExpanded;
 
         if (_doAnimation)
         {

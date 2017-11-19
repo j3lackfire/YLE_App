@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
@@ -38,6 +36,9 @@ public class SearchUI : MonoBehaviour {
         numberOfResult.text = "";
         logo = transform.Find("LOGO").GetComponent<Text>();
 
+        doSearchButton.onClick.AddListener(OnSearchButtonClicked);
+        searchField.onEndEdit.AddListener(OnSearchFieldEndEdit);
+
         isFirstSearch = true;
     }
 
@@ -47,18 +48,6 @@ public class SearchUI : MonoBehaviour {
         {
             SceneManager.LoadScene(0);
         }
-    }
-
-    private void OnEnable()
-    {
-        doSearchButton.onClick.AddListener(OnSearchButtonClicked);
-        searchField.onEndEdit.AddListener(OnSearchFieldEndEdit);
-    }
-
-    private void OnDisable()
-    {
-        doSearchButton.onClick.RemoveListener(OnSearchButtonClicked);
-        searchField.onEndEdit.RemoveListener(OnSearchFieldEndEdit);
     }
 
     private void OnSearchFieldEndEdit(string _s)

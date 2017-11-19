@@ -61,6 +61,7 @@ public class YleConnector : BaseManager {
             .AddAuthorization()
         );
         
+        //the get request to the server
         Debug.Log(YLEHelper.GetBaseURL().SetSearchQuery(_query).SetSearchLimit(10).AddAuthorization());
         yield return www.SendWebRequest();
         isLoading = false;
@@ -70,7 +71,7 @@ public class YleConnector : BaseManager {
             Debug.LogError(www.error);
         } else
         {
-            Debug.Log("<color=cyan>Server response:</color>");
+            //Debug.Log("<color=cyan>Server response:</color>");
             Debug.Log(www.downloadHandler.text);
             callback(YLEResponse.FromJSON(www.downloadHandler.text));
         }
@@ -109,7 +110,7 @@ public class YleConnector : BaseManager {
             //clear everything and fetch everything from start.
             if (searchQuery == currentSearchQuery)
             {
-                Debug.Log(_index + " ," + Time.timeSinceLevelLoad + " , " + www_2.downloadHandler.text);
+                //Debug.Log(_index + " ," + Time.timeSinceLevelLoad + " , " + www_2.downloadHandler.text);
                 Texture2D thumbnail = new Texture2D(256, 256);
                 thumbnail.LoadImage(www_2.downloadHandler.data);
                 thumbnail.Apply();

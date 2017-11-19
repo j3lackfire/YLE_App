@@ -12,8 +12,8 @@ public class UIScrollView : MonoBehaviour {
     private int numberOfElementUntilEnd = -1;
     private int numberOfElementPerPage;
 
-    private float elementHeight = 200f;
-    private float elementHeightExpanded = 500f;
+    public float ElementHeight { get {return 200f; } }
+    public float ElementHeightExpanded { get { return 500f; } }
 
     private RectTransform contentPanel;
     
@@ -35,7 +35,7 @@ public class UIScrollView : MonoBehaviour {
         contentPanel = transform.Find("Viewport/Content").GetComponent<RectTransform>();
         contentPanel.sizeDelta = new Vector2(contentPanel.sizeDelta.x, spacing);
 
-        numberOfElementPerPage = (int)(thisRectTransform.sizeDelta.y / elementHeight);
+        numberOfElementPerPage = (int)(thisRectTransform.sizeDelta.y / ElementHeight);
 
         ClearAllView();
 
@@ -67,13 +67,13 @@ public class UIScrollView : MonoBehaviour {
     public BaseUIElement AddUIElement(YLEResponse.Data _data)
     {
         BaseUIElement uiElement = PrefabsManager.SpawnPrefab<BaseUIElement>("BaseUIElement", "Prefabs/");
-        float elementYPos = spacing + baseUIElementsList.Count * (spacing + elementHeight) + expandedElementList.Count * (elementHeightExpanded - elementHeight);
+        float elementYPos = spacing + baseUIElementsList.Count * (spacing + ElementHeight) + expandedElementList.Count * (ElementHeightExpanded - ElementHeight);
         uiElement.Init(this, contentPanel, baseUIElementsList.Count, -elementYPos, _data);
 
         //add to my list for easy manager
         baseUIElementsList.Add(uiElement);
         //resize the content panel accordingly
-        contentPanel.sizeDelta += new Vector2(0, spacing + elementHeight);
+        contentPanel.sizeDelta += new Vector2(0, spacing + ElementHeight);
         //set the thumbnail
         if (_data.HasThumbnail())
         {
@@ -93,10 +93,10 @@ public class UIScrollView : MonoBehaviour {
             return;
         }
         expandedElementList.Add(_index);
-        contentPanel.DOSizeDelta(new Vector2(contentPanel.sizeDelta.x, contentPanel.sizeDelta.y + elementHeightExpanded - elementHeight), 0.3f);
+        contentPanel.DOSizeDelta(new Vector2(contentPanel.sizeDelta.x, contentPanel.sizeDelta.y + ElementHeightExpanded - ElementHeight), 0.3f);
         for (int i = _index + 1; i < baseUIElementsList.Count; i ++)
         {
-            baseUIElementsList[i].MoveBy(elementHeightExpanded - elementHeight, 0.3f);
+            baseUIElementsList[i].MoveBy(ElementHeightExpanded - ElementHeight, 0.3f);
         }
     }
 
@@ -108,6 +108,6 @@ public class UIScrollView : MonoBehaviour {
 
     private void CalculateLowestElementIndex()
     {
-        numberOfElementUntilEnd = (int)((contentPanel.sizeDelta.y - contentPanel.anchoredPosition.y) / (elementHeight + spacing)) - numberOfElementPerPage;
+        numberOfElementUntilEnd = (int)((contentPanel.sizeDelta.y - contentPanel.anchoredPosition.y) / (ElementHeight + spacing)) - numberOfElementPerPage;
     }
 }
